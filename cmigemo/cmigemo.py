@@ -62,6 +62,7 @@ class Migemo(object):
     def query(self, query_string):
         query_bytes = self.ensure_string_encoded(query_string)
         regexp_bytes = self.libmigemo.migemo_query(self.migemo_struct, query_bytes)
+        # TODO: Free up RegExp memory
         return regexp_bytes.decode(self.get_encoding())
 
     def set_operator(self):
