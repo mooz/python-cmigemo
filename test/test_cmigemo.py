@@ -27,9 +27,20 @@ class TestCMigemo(unittest.TestCase):
         self.assertEqual("euc_jp", migemo_eucjp.get_encoding())
 
     def test_migemo_query(self):
-        migemo = cmigemo.Migemo(self.dict_path_for_encoding("utf-8"))
-        self.assertEqual(u"(フガ|府[金外]|腑甲斐|不学|富嶽|ふが|ｈｕｇａ|huga)",
-                         migemo.query("huga"))
+        expected_result_unicode = u"(ホゲ|補元|保元|帆桁|捕鯨|ほげ)"
+        query_string_unicode = u"ほげ"
+
+        migemo_utf8 = self.get_migemo_instance("utf-8")
+        self.assertEqual(expected_result_unicode,
+                         migemo_utf8.query(query_string_unicode.encode("utf-8")))
+        self.assertEqual(expected_result_unicode,
+                         migemo_utf8.query(query_string_unicode))
+
+        migemo_eucjp = self.get_migemo_instance("euc-jp")
+        self.assertEqual(expected_result_unicode,
+                         migemo_eucjp.query(query_string_unicode.encode("euc-jp")))
+        self.assertEqual(expected_result_unicode,
+                         migemo_eucjp.query(query_string_unicode))
 
 if __name__ == "__main__":
     unittest.main()

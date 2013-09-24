@@ -41,6 +41,12 @@ class Migemo(object):
         libmigemo.migemo_query.restype = c_char_p
         return libmigemo
 
+    def ensure_string_encoded(self, string):
+        if isinstance(string, unicode):
+            return string.encode(self.get_encoding())
+        else:
+            return string
+
     def get_encoding(self):
         return charset_map[self.migemo_struct.contents.charset]
 
@@ -54,8 +60,9 @@ class Migemo(object):
         pass
 
     def query(self, query_string):
-        regexp_bytes = self.libmigemo.migemo_query(self.migemo_struct, query_string)
-        return regexp_bytes.decode("utf8")
+        query_bytes = self.ensure_string_encoded(query_string)
+        regexp_bytes = self.libmigemo.migemo_query(self.migemo_struct, query_bytes)
+        return regexp_bytes.decode(self.get_encoding())
 
     def set_operator(self):
         pass
