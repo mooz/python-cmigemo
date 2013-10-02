@@ -25,23 +25,24 @@ class MigemoStruct(Structure):
 
 class Migemo(object):
     def __init__(self, dictionary_path):
-        self.libmigemo = self.load_libmigemo()
-        self.migemo_struct = self.open_migemo(dictionary_path)
+        self.libmigemo = self._load_libmigemo()
+        self.migemo_struct = self._open_migemo(dictionary_path)
 
     def open_migemo(self, dictionary_path):
+    def _open_migemo(self, dictionary_path):
         import os
         if not os.path.exists(dictionary_path):
             raise IOError("Specified dictionary not found: " + dictionary_path)
         return self.libmigemo.migemo_open(dictionary_path)
 
-    def load_libmigemo(self, lib_name = "libmigemo.so"):
+    def _load_libmigemo(self, lib_name = "libmigemo.so"):
         libmigemo = cdll.LoadLibrary(lib_name)
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
         libmigemo.migemo_query.restype = c_char_p
         return libmigemo
 
-    def ensure_string_encoded(self, string):
+    def _ensure_string_encoded(self, string):
         if isinstance(string, unicode):
             return string.encode(self.get_encoding())
         else:
