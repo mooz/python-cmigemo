@@ -24,11 +24,16 @@ class MigemoStruct(Structure):
     ]
 
 class Migemo(object):
+    migemo_struct = None
+
     def __init__(self, dictionary_path):
         self.libmigemo = self._load_libmigemo()
         self.migemo_struct = self._open_migemo(dictionary_path)
 
-    def open_migemo(self, dictionary_path):
+    def __del__(self):
+        if self.migemo_struct is not None:
+            self.libmigemo.migemo_close(self.migemo_struct)
+
     def _open_migemo(self, dictionary_path):
         import os
         if not os.path.exists(dictionary_path):
