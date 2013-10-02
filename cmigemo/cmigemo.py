@@ -39,7 +39,7 @@ class Migemo(object):
         libmigemo = cdll.LoadLibrary(lib_name)
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
-        libmigemo.migemo_query.restype = c_char_p
+        libmigemo.migemo_query.restype = c_void_p
         return libmigemo
 
     def _ensure_string_encoded(self, string):
@@ -47,6 +47,9 @@ class Migemo(object):
             return string.encode(self.get_encoding())
         else:
             return string
+
+    def _char_ptr_to_string(self, char_ptr):
+        return cast(char_ptr, c_char_p).value
 
     def get_encoding(self):
         return charset_map[self.migemo_struct.contents.charset]
@@ -61,10 +64,14 @@ class Migemo(object):
         pass
 
     def query(self, query_string):
-        query_bytes = self.ensure_string_encoded(query_string)
-        regexp_bytes = self.libmigemo.migemo_query(self.migemo_struct, query_bytes)
-        # TODO: Free up RegExp memory
-        return regexp_bytes.decode(self.get_encoding())
+        query_bytes = self._ensure_string_encoded(query_string)
+        regexp_ptr = self.libmigemo.migemo_query(self.migemo_struct, query_bytes)
+        try:
+            regexp_bytes = self._char_ptr_to_string(regexp_ptr)
+            regexp_string = regexp_bytes.decode(self.get_encoding())
+        finally:
+            self.libmigemo.migemo_release(self.migemo_struct, regexp_ptr)
+        return regexp_string
 
     def set_operator(self):
         pass
