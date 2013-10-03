@@ -96,5 +96,4 @@ class Migemo(object):
 
     def set_operator(self, index, operator):
         operator_bytes = self._ensure_string_encoded(operator)
-        # migemo_set_operator(self->migemo_obj, index, op))
         return self.libmigemo.migemo_set_operator(self.migemo_struct, index, operator_bytes)
