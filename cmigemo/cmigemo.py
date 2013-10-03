@@ -2,12 +2,6 @@
 
 from ctypes import *
 
-charset_map = {
-    0: "ascii",
-    1: "cp932",
-    2: "euc_jp",
-    3: "utf_8",
-}
 
 class MigemoStruct(Structure):
     _fields_ = [
@@ -57,8 +51,14 @@ class Migemo(object):
     def _char_ptr_to_string(self, char_ptr):
         return cast(char_ptr, c_char_p).value
 
+    charset_map = {
+        0: "ascii",
+        1: "cp932",
+        2: "euc_jp",
+        3: "utf_8",
+    }
     def get_encoding(self):
-        return charset_map[self.migemo_struct.contents.charset]
+        return self.charset_map[self.migemo_struct.contents.charset]
 
     def get_operator(self, index):
         return self.libmigemo.migemo_get_operator(self.migemo_struct, index)
