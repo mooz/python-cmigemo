@@ -17,6 +17,7 @@ class TestCMigemo(unittest.TestCase):
     def test_migemo_load(self):
         migemo = self.get_migemo_instance()
         self.assertTrue(isinstance(migemo, cmigemo.Migemo))
+        self.assertTrue(migemo.is_enable())
         self.assertRaises(IOError, self.get_migemo_instance, "not-existing-dictionary")
 
     def test_migemo_get_encoding(self):

@@ -45,6 +45,7 @@ class Migemo(object):
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
         libmigemo.migemo_query.restype = c_void_p
+        libmigemo.migemo_is_enable.restype = c_bool
         return libmigemo
 
     def _ensure_string_encoded(self, string):
@@ -63,7 +64,7 @@ class Migemo(object):
         return self.libmigemo.migemo_get_operator(self.migemo_struct, index)
 
     def is_enable(self):
-        pass
+        return self.libmigemo.migemo_is_enable(self.migemo_struct)
 
     def load(self):
         pass
