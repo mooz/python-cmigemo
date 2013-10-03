@@ -79,8 +79,8 @@ class Migemo(object):
     def is_enable(self):
         return self.libmigemo.migemo_is_enable(self.migemo_struct)
 
-    def load(self):
-        pass
+    def load(self, dict_id, dict_file):
+        raise NotImplemented
 
     def query(self, query_string):
         query_bytes = self._ensure_string_encoded(query_string)
