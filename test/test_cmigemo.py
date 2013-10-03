@@ -43,5 +43,22 @@ class TestCMigemo(unittest.TestCase):
         self.assertEqual(expected_result_unicode,
                          migemo_eucjp.query(query_string_unicode))
 
+    def test_migemo_get_operator(self):
+        migemo_utf8 = self.get_migemo_instance("utf-8")
+        self.assertEqual("|", migemo_utf8.get_operator(0))
+        self.assertEqual("(", migemo_utf8.get_operator(1))
+        self.assertEqual(")", migemo_utf8.get_operator(2))
+
+    def test_migemo_set_operator(self):
+        migemo_utf8 = self.get_migemo_instance("utf-8")
+
+        self.assertEqual("|", migemo_utf8.get_operator(0))
+        self.assertTrue(migemo_utf8.set_operator(0, ")"))
+        self.assertEqual(")", migemo_utf8.get_operator(0))
+
+        self.assertEqual("(", migemo_utf8.get_operator(1))
+        self.assertTrue(migemo_utf8.set_operator(1, "!"))
+        self.assertEqual("!", migemo_utf8.get_operator(1))
+
 if __name__ == "__main__":
     unittest.main()

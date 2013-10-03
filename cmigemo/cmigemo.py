@@ -51,6 +51,7 @@ class Migemo(object):
         libmigemo = cdll.LoadLibrary(lib_name)
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
+        libmigemo.migemo_set_operator.restype = c_bool
         libmigemo.migemo_query.restype = c_void_p
         libmigemo.migemo_is_enable.restype = c_bool
         return libmigemo
@@ -89,9 +90,11 @@ class Migemo(object):
             self.libmigemo.migemo_release(self.migemo_struct, regexp_ptr)
         return regexp_string
 
-    def set_operator(self):
-        pass
     def get_operator(self, index):
         operator_bytes = self.libmigemo.migemo_get_operator(self.migemo_struct, index)
         return operator_bytes.decode(self.get_encoding())
 
+    def set_operator(self, index, operator):
+        operator_bytes = self._ensure_string_encoded(operator)
+        # migemo_set_operator(self->migemo_obj, index, op))
+        return self.libmigemo.migemo_set_operator(self.migemo_struct, index, operator_bytes)
