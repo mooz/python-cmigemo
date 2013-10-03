@@ -73,9 +73,6 @@ class Migemo(object):
     def get_encoding(self):
         return self.charset_map[self.migemo_struct.contents.charset]
 
-    def get_operator(self, index):
-        return self.libmigemo.migemo_get_operator(self.migemo_struct, index)
-
     def is_enable(self):
         return self.libmigemo.migemo_is_enable(self.migemo_struct)
 
@@ -94,3 +91,7 @@ class Migemo(object):
 
     def set_operator(self):
         pass
+    def get_operator(self, index):
+        operator_bytes = self.libmigemo.migemo_get_operator(self.migemo_struct, index)
+        return operator_bytes.decode(self.get_encoding())
+
