@@ -14,11 +14,21 @@ class TestCMigemo(unittest.TestCase):
     def get_migemo_instance(self, encoding = "utf-8"):
         return cmigemo.Migemo(self.dict_path_for_encoding(encoding))
 
-    def test_migemo_load(self):
+    def test_migemo_open(self):
         migemo = self.get_migemo_instance()
         self.assertTrue(isinstance(migemo, cmigemo.Migemo))
         self.assertTrue(migemo.is_enable())
         self.assertRaises(IOError, self.get_migemo_instance, "not-existing-dictionary")
+
+    def test_migemo_load(self):
+        migemo = self.get_migemo_instance("utf-8")
+        loaded_dict_id = migemo.load(cmigemo.DICTID_MIGEMO, self.dict_path_for_encoding("utf-8"))
+        self.assertEqual(cmigemo.DICTID_MIGEMO, loaded_dict_id)
+
+    def test_migemo_load_not_found(self):
+        migemo = self.get_migemo_instance("utf-8")
+        loaded_dict_id = migemo.load(cmigemo.DICTID_MIGEMO, "not-existing-dictionary")
+        self.assertEqual(cmigemo.DICTID_INVALID, loaded_dict_id)
 
     def test_migemo_get_encoding(self):
         migemo_utf8 = self.get_migemo_instance("utf-8")
