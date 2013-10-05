@@ -9,7 +9,7 @@ import cmigemo
 
 setup(name             = "cmigemo",
       version          = cmigemo.__version__,
-      author           = "Masafumi Oyamada a.k.a. mooz",
+      author           = "Masafumi Oyamada",
       author_email     = "stillpedant@gmail.com",
       url              = "https://github.com/mooz/python-cmigemo",
       description      = "A pure python binding for C/Migemo",
