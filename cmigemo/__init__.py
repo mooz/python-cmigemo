@@ -2,7 +2,7 @@
 
 """A C/Migemo binding for python written in pure python using ctypes."""
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 DICTID_INVALID = 0
 DICTID_MIGEMO = 1
