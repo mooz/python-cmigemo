@@ -37,7 +37,11 @@ class Migemo(object):
         return self.libmigemo.migemo_open(dictionary_path)
 
     def _load_libmigemo(self, lib_name = "libmigemo.so"):
-        libmigemo = cdll.LoadLibrary(lib_name)
+        import platform
+        if platform.system() == u"Windows":
+            libmigemo = windll.migemo
+        else:
+            libmigemo = cdll.LoadLibrary(lib_name)
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
         libmigemo.migemo_set_operator.restype = c_bool
