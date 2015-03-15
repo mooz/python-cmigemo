@@ -30,7 +30,7 @@ class Migemo(object):
     def _assert_file_exist(self, file_path):
         import os
         if not os.path.exists(file_path):
-            raise IOError("Fie not found: " + file_path)
+            raise IOError("File not found: " + file_path)
 
     def _open_migemo(self, dictionary_path):
         self._assert_file_exist(dictionary_path)
