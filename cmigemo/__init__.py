@@ -2,7 +2,7 @@
 
 """A C/Migemo binding for python written in pure python using ctypes."""
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 DICTID_INVALID = 0
 DICTID_MIGEMO = 1
@@ -18,4 +18,4 @@ OPINDEX_SELECT_IN = 3
 OPINDEX_SELECT_OUT = 4
 OPINDEX_NEWLINE = 5
 
-from migemo import Migemo
+from cmigemo.migemo import Migemo
