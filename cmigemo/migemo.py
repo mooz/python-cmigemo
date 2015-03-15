@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import six
+
 from ctypes import *
 
 class MigemoStruct(Structure):
@@ -19,7 +21,8 @@ class MigemoStruct(Structure):
 class Migemo(object):
     migemo_struct = None
 
-    def __init__(self, dictionary_path):
+    def __init__(self, dictionary_path, path_encoding="utf_8"):
+        self.path_encoding = path_encoding
         self.libmigemo = self._load_libmigemo()
         self.migemo_struct = self._open_migemo(dictionary_path)
 
@@ -34,7 +37,9 @@ class Migemo(object):
 
     def _open_migemo(self, dictionary_path):
         self._assert_file_exist(dictionary_path)
-        return self.libmigemo.migemo_open(dictionary_path)
+        dictionary_path_raw = self._ensure_string_encoded(dictionary_path,
+                                                          self.path_encoding)
+        return self.libmigemo.migemo_open(dictionary_path_raw)
 
     def _load_libmigemo(self, lib_name = "libmigemo.so"):
         import platform
@@ -50,9 +55,9 @@ class Migemo(object):
         libmigemo.migemo_load.restype = c_int
         return libmigemo
 
-    def _ensure_string_encoded(self, string):
-        if isinstance(string, unicode):
-            return string.encode(self.get_encoding())
+    def _ensure_string_encoded(self, string, encoding=None):
+        if isinstance(string, six.text_type):
+            return string.encode(encoding or self.get_encoding())
         else:
             return string
 
@@ -72,7 +77,11 @@ class Migemo(object):
         return self.libmigemo.migemo_is_enable(self.migemo_struct)
 
     def load(self, dict_id, dict_file):
-        return self.libmigemo.migemo_load(self.migemo_struct, dict_id, dict_file)
+        dict_file_raw = self._ensure_string_encoded(dict_file,
+                                                    self.path_encoding)
+        return self.libmigemo.migemo_load(self.migemo_struct,
+                                          dict_id,
+                                          dict_file_raw)
 
     def query(self, query_string):
         query_bytes = self._ensure_string_encoded(query_string)
