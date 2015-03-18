@@ -50,6 +50,13 @@ class Migemo(object):
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
         libmigemo.migemo_set_operator.restype = c_bool
+        # Note: Actually migemo_query's return type is char* (it
+        # returns newly-allocated string, which have to be released by
+        # us afterward). However if we do "restype = c_char_p", ctypes
+        # converts returned pointer value to Python string, preventing
+        # us from getting pointer value and freeing the memory pointed
+        # by the value. We take a known workaround for this issue,
+        # which do "restype = c_void_p" and cast it afterward.
         libmigemo.migemo_query.restype = c_void_p
         libmigemo.migemo_is_enable.restype = c_bool
         libmigemo.migemo_load.restype = c_int
@@ -60,9 +67,6 @@ class Migemo(object):
             return string.encode(encoding or self.get_encoding())
         else:
             return string
-
-    def _char_ptr_to_string(self, char_ptr):
-        return cast(char_ptr, c_char_p).value
 
     charset_map = {
         0: "ascii",
@@ -83,14 +87,26 @@ class Migemo(object):
                                           dict_id,
                                           dict_file_raw)
 
-    def query(self, query_string):
+    def _migemo_query(self, query_string):
         query_bytes = self._ensure_string_encoded(query_string)
         regexp_ptr = self.libmigemo.migemo_query(self.migemo_struct, query_bytes)
+        return regexp_ptr
+
+    def _ptr_to_python_string(self, ptr):
+        regexp_bytes = cast(ptr, c_char_p).value
+        regexp_string = regexp_bytes.decode(self.get_encoding())
+        return regexp_string
+
+    def _migemo_release_memory(self, ptr):
+        # To free char* correctly, we need casting
+        self.libmigemo.migemo_release(self.migemo_struct, cast(ptr, c_char_p))
+
+    def query(self, query_string):
+        regexp_ptr = self._migemo_query(query_string)
         try:
-            regexp_bytes = self._char_ptr_to_string(regexp_ptr)
-            regexp_string = regexp_bytes.decode(self.get_encoding())
+            regexp_string = self._ptr_to_python_string(regexp_ptr)
         finally:
-            self.libmigemo.migemo_release(self.migemo_struct, regexp_ptr)
+            self._migemo_release_memory(regexp_ptr)
         return regexp_string
 
     def get_operator(self, index):
