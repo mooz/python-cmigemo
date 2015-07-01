@@ -45,6 +45,8 @@ class Migemo(object):
         import platform
         if platform.system() == u"Windows":
             libmigemo = windll.migemo
+        elif platform.system() == u"Darwin":
+            libmigemo = CDLL("libmigemo.dylib")
         else:
             libmigemo = cdll.LoadLibrary(lib_name)
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
