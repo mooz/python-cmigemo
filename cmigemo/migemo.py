@@ -3,6 +3,7 @@
 import six
 
 from ctypes import *
+from ctypes.util import find_library
 
 class MigemoStruct(Structure):
     _fields_ = [
@@ -41,14 +42,17 @@ class Migemo(object):
                                                           self.path_encoding)
         return self.libmigemo.migemo_open(dictionary_path_raw)
 
-    def _load_libmigemo(self, lib_name = "libmigemo.so"):
+    def _load_libmigemo(self, lib_name="migemo"):
         import platform
         if platform.system() == u"Windows":
             libmigemo = windll.migemo
         elif platform.system() == u"Darwin":
             libmigemo = CDLL("libmigemo.dylib")
         else:
-            libmigemo = cdll.LoadLibrary(lib_name)
+            lib_path = find_library(lib_name)
+            if lib_path is None:
+                lib_path = "lib" + lib_name + ".so"
+            libmigemo = cdll.LoadLibrary(lib_path)
         libmigemo.migemo_open.restype = POINTER(MigemoStruct)
         libmigemo.migemo_get_operator.restype = c_char_p
         libmigemo.migemo_set_operator.restype = c_bool
