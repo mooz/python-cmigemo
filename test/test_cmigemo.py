@@ -38,20 +38,16 @@ class TestCMigemo(unittest.TestCase):
         self.assertEqual("euc_jp", migemo_eucjp.get_encoding())
 
     def test_migemo_query(self):
-        expected_result_unicode = u"(ホゲ|補元|保元|帆桁|捕鯨|ほげ)"
+        expected_result_unicode = u"ホゲ"
         query_string_unicode = u"ほげ"
 
         migemo_utf8 = self.get_migemo_instance("utf-8")
-        self.assertEqual(expected_result_unicode,
-                         migemo_utf8.query(query_string_unicode.encode("utf-8")))
-        self.assertEqual(expected_result_unicode,
-                         migemo_utf8.query(query_string_unicode))
+        self.assertTrue(expected_result_unicode in migemo_utf8.query(query_string_unicode.encode("utf-8")))
+        self.assertTrue(expected_result_unicode in migemo_utf8.query(query_string_unicode))
 
         migemo_eucjp = self.get_migemo_instance("euc-jp")
-        self.assertEqual(expected_result_unicode,
-                         migemo_eucjp.query(query_string_unicode.encode("euc-jp")))
-        self.assertEqual(expected_result_unicode,
-                         migemo_eucjp.query(query_string_unicode))
+        self.assertTrue(expected_result_unicode in migemo_eucjp.query(query_string_unicode.encode("euc-jp")))
+        self.assertTrue(expected_result_unicode in migemo_eucjp.query(query_string_unicode))
 
     def test_migemo_get_operator(self):
         migemo_utf8 = self.get_migemo_instance("utf-8")
